@@ -189,7 +189,7 @@ async def chatbot_api(request: Request):
 # ===============================
 @app.get("/")
 def home_page():
-    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+    return FileResponse(os.path.join(BASE_DIR, "home.html"))
 
 @app.get("/email")
 def email_page():
@@ -202,4 +202,5 @@ def url_page():
 @app.get("/chatbot")
 def chatbot_page():
     return FileResponse(os.path.join(BASE_DIR, "chatbot.html"))
+
 
