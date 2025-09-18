@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Click-Safe | AI404</title>
+  <meta name="description" content="AI-Powered Social Engineering Detection Platform" />
+  <style>
+    :root{
+      --header-bg: #0b1220;
+      --accent: #4f46e5;
+      --white: #fff;
+      --muted: #bfc6d6;
+      --orbit-color: #4f9eff;
+      --glass: rgba(255,255,255,0.04);
+      --danger: #ff6b6b;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      color:var(--white);
+      background: linear-gradient(-45deg,#0f0c29,#302b63,#24243e);
+      background-size:400% 400%;
+      animation: gradientBG 20s ease infinite;
+      overflow-x:hidden;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    @keyframes gradientBG{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    header{
+      height:72px;
+      padding:0 32px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position:fixed;
+      left:0;right:0;top:0;
+      background:var(--header-bg);
+      z-index:100;
+      box-shadow:0 6px 18px rgba(3,6,23,0.45);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{width:56px;height:56px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4)}
+    .brand .logo img{width:88%;height:88%;object-fit:contain;display:block}
+    .brand span{font-size:1.05rem;font-weight:700;color:var(--white);letter-spacing:0.2px}
+    nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+    nav a{color:var(--white);text-decoration:none;font-weight:500;opacity:0.98;padding:8px 10px;border-radius:8px}
+    nav a:hover{background:rgba(255,255,255,0.03)}
+    /* Dropdown Menu */
+    nav ul li.dropdown { position: relative; }
+    nav ul li.dropdown .dropdown-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      background: var(--header-bg);
+      padding: 8px 6px;
+      border-radius: 10px;
+      min-width: 220px;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      z-index: 110;
+    }
+    nav ul li.dropdown .dropdown-menu li { width: 100%; }
+    nav ul li.dropdown .dropdown-menu li a {
+      display: block;
+      padding: 10px 16px;
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav ul li.dropdown .dropdown-menu li a:hover {
+      background: rgba(79,158,255,0.08);
+      color: #9ecbff;
+    }
+    nav ul li.dropdown:hover .dropdown-menu { display:flex; }
+
+    /* Hero */
+    .hero-wrap{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding-top:72px;background:transparent;}
+    .hero-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+    canvas.three-canvas{width:100%;height:100%;display:block;pointer-events:none}
+    .hero-content{position:relative;z-index:20;max-width:980px;text-align:center;padding:80px 20px;color:var(--white);}
+    .hero-content h1{font-size:2.4rem;line-height:1.06;margin-bottom:12px}
+    .hero-content p{color:var(--muted);font-size:1.05rem;margin-bottom:22px}
+    .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:700}
+    .btn.primary{background:var(--accent);color:#fff;box-shadow:0 8px 22px rgba(79,70,229,0.18)}
+    .btn.secondary{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.06)}
+
+    .section-divider {
+      position: relative;
+      width: 100%;
+      height: 28px;
+      background: linear-gradient(270deg, #d664a7, #b32f92, #9435b9,#4f46e5,#4f9eff);
+      background-size: 600% 600%;
+      animation: gradient-slide 8s linear infinite;
+      z-index: 10;
+      clip-path: polygon(0 0, 100% 62%, 100% 100%, 0% 100%);
+    }
+
+    .divider-text{
+      text-align:center;
+      margin: 36px 20px;
+      color:#ffffff;
+      background: rgba(79,158,255,0.08);
+      padding:20px;
+      border-radius:12px;
+      font-size:1.05rem;
+    }
+
+    /* Features Section (dark background same as About) */
+    section.second {
+      background: #07021a;
+      color:#fff;
+      min-height:70vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      flex-direction:column;
+      text-align:center;
+      padding:60px 20px;
+    }
+
+    .features-row {
+      display:flex;
+      justify-content:center;
+      gap:40px;
+      flex-wrap:wrap;
+      margin-top:40px;
+      position:relative;
+    }
+
+    .feature-card {
+      background:#0f0c29;
+      border-radius:18px;
+      padding:24px;
+      width:260px;
+      text-align:center;
+      border:2px solid var(--orbit-color);
+      box-shadow:0 0 18px rgba(79,158,255,0.25);
+      position:relative;
+    }
+    .feature-card h3{margin-bottom:10px;font-size:1.2rem;}
+    .feature-card p{font-size:0.95rem;color:#cfcfe3;}
+
+    /* Rotating ring */
+    .feature-card::before {
+      content:"";
+      position:absolute;
+      top:-15px; left:-15px; right:-15px; bottom:-15px;
+      border:2px dashed var(--orbit-color);
+      border-radius:50%;
+      animation: spin 14s linear infinite;
+      z-index:-1;
+      opacity:0.75;
+    }
+    @keyframes spin {
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+
+    /* Third Section (About + Modules) */
+    section.third {
+      background: #07021a;
+      color: #ffffff;
+      padding: 120px 20px;
+      text-align: center;
+    }
+
+    .third-container { max-width:1100px; margin: 0 auto; }
+    .third-container h2 { font-size: 3rem; margin-bottom: 12px; }
+    .third-container p.lead { font-size:1.05rem; color:#cfcfe3; margin-bottom:28px; max-width:880px; margin-left:auto; margin-right:auto; line-height:1.5; }
+
+    .third-cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      padding: 26px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      flex: 1 1 300px;
+      max-width: 320px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .card-img {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 14px;
+      border: 3px solid rgba(79,70,229,0.9);
+      box-shadow: 0 8px 24px rgba(79,70,229,0.12);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s;
+    }
+    .card-img:hover { transform: translateY(-6px) scale(1.05); filter: saturate(1.1); box-shadow: 0 18px 44px rgba(79,70,229,0.25); }
+
+    .card h3 { font-size:1.15rem; margin-bottom:8px; }
+    .card p { font-size:0.96rem; color:#d6d0ff; }
+
+    .about-closing { margin-top:34px; color:#cfcfe3; font-size:1rem; line-height:1.6; max-width:900px; margin-left:auto;margin-right:auto; }
+
+    footer{padding:28px 20px;text-align:center;color:var(--muted);font-size:14px;background:transparent; margin-top:40px}
+
+    /* small screens */
+    @media (max-width:900px) {
+      .features-row { gap:18px; }
+      .feature-card { width:100%; max-width:360px; }
+      .third-cards { gap:12px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo"><img src="/static/logo.png" alt="logo"></div>
+      <span>Click-Safe</span>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#features">Features</a></li>
+        <li class="dropdown">
+          <a href="#tools">Tools ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="/email">Email Checker</a></li>
+            <li><a href="/url">Fraud Links</a></li>
+            <li><a href="/chatbot">Chatbot Help</a></li>
+          </ul>
+        </li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero-wrap" id="home" aria-label="Hero section with interactive scene">
+      <div class="hero-bg" id="hero-bg">
+        <canvas class="three-canvas" id="three-canvas" aria-hidden="true"></canvas>
+      </div>
+
+      <div class="hero-content" role="banner" aria-label="Click-Safe hero">
+        <h1>Best-in-Class AI Solutions for<br/> Fraud, Risk & Compliance</h1>
+        <p>Outpace evolving threats with adaptive, AI-powered detection that learns, explains, and protects.</p>
+        <div class="cta-row">
+          <a class="btn secondary" href="#about">Why Click-Safe?</a>
+          <a class="btn primary" href="#features" style="text-decoration:none">Explore Features</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="section-divider" aria-hidden="true"></div>
+
+    <div class="divider-text">
+      <h2>Future-Proof Your Fraud & Risk Program</h2>
+      <p>Integrated platform for detection, response and continuous learning — designed to reduce false positives and adapt to new tactics in the wild.</p>
+    </div>
+
+    <!-- Features (static cards, spinning ring around each) -->
+    <section class="second" id="features" aria-label="Key features">
+      <h2 style="margin-top:4px">Key Features</h2>
+      <div class="features-row" role="list" aria-label="Feature cards">
+        <div class="feature-card" role="listitem">
+          <h3>Phishing Links</h3>
+          <p>Identify & neutralize phishing attacks in real-time with URL analysis, heuristics and model scoring.</p>
+        </div>
+        <div class="feature-card" role="listitem">
+          <h3>Document Scans</h3>
+          <p>Detect tampering, forgery and malware in attachments—fast scanning and automated triage.</p>
+        </div>
+        <div class="feature-card" role="listitem">
+          <h3>Account Breaches</h3>
+          <p>Monitor credential leaks and suspicious access patterns; trigger containment workflows automatically.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About / Modules -->
+    <section class="third" id="about" aria-label="About and modules">
+      <div class="third-container">
+        <h2>The Enterprise Fraud & Risk<br>Platform</h2>
+
+        <p class="lead">
+          Comprehensive, modular, and customizable fraud and risk management platform that unifies solutions
+          from entity screening to transaction monitoring. Our AI-native solutions use built-in learning loops
+          to adapt to the diverse needs and unique challenges specific to your business.
+        </p>
+
+        <div class="third-cards" role="list" aria-label="Modules">
+          <div class="card" role="listitem">
+            <img src="/static/Compliance_monitoring.webp" alt="Module 1 - Compliance Monitoring" class="card-img">
+            <h3>Module 1</h3>
+            <p>Deep Learning for Threat Detection — continuously updated model pipelines and explainability.</p>
+          </div>
+
+          <div class="card" role="listitem">
+            <img src="/static/iStock-1189050206.jpg" alt="Module 2 - Threat Intelligence" class="card-img">
+            <h3>Module 2</h3>
+            <p>Automated Risk Assessment — entity risk scores, anomaly detection, and risk workflows.</p>
+          </div>
+
+          <div class="card" role="listitem">
+            <img src="/static/federated-learning-for-cybersecurity-collaborative-intelligence-for-threat-detection.jpg" alt="Module 3 - Federated Learning" class="card-img">
+            <h3>Module 3</h3>
+            <p>Compliance Monitoring Dashboard — reporting, alerts, and integration to case management.</p>
+          </div>
+        </div>
+
+        <p class="about-closing">
+          By integrating these modules, your organization can stay one step ahead of fraudsters, improve compliance efficiency,
+          and build stronger customer trust with adaptive AI that learns from feedback and real-world signals.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>© AI404 • 2025 — Made with AI and Innovation.</footer>
+
+  <!-- Three.js animation: cubes + spheres assemble into sphere, dismantle, repeat.
+       This script uses instanced meshes, Fibonacci sphere distribution, easing,
+       color cycling, and adaptive rebuilds for responsiveness.
+  -->
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.150.0/build/three.module.js';
+
+    /* ------------------------------
+       Scene setup
+       ------------------------------ */
+    const canvas = document.getElementById('three-canvas');
+    const heroBg = document.getElementById('hero-bg');
+    const scene = new THREE.Scene();
+
+    // camera roughly centered on hero area
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+    camera.position.set(0, 0, 6.8);
+
+    // renderer
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+    renderer.setClearColor(0x000000, 0);
+
+    // lights - ambient + key directional
+    const amb = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(amb);
+    const key = new THREE.DirectionalLight(0xffffff, 0.7);
+    key.position.set(5, 8, 6);
+    scene.add(key);
+
+    /* ------------------------------
+       Parameters - tweak these to change density/behavior
+       ------------------------------ */
+    const DESKTOP_COUNT = 1000;      // number of instanced pieces total
+    const MOBILE_COUNT = 420;
+    const MIX_SPHERE_RATIO = 0.28;   // 0..1 fraction that are spheres (rest cubes)
+    const PIECE_SIZE = 0.06;         // base size of pieces
+    const SPHERE_RADIUS = 2.6;       // target assembled sphere radius
+    const EXPLODE_DISTANCE = 2.6;    // how far pieces go when "exploded"
+    const ASSEMBLE_PERIOD = 8.8;     // seconds for assemble/disassemble cycle
+    const ROTATE_SPEED = 0.0015;
+
+    function getCount() {
+      return window.innerWidth < 720 ? MOBILE_COUNT : DESKTOP_COUNT;
+    }
+
+    let totalCount = getCount();
+
+    /* ------------------------------
+       Two instanced meshes: cubes + spheres
+       We'll create counts for each type, allocate the first N indices to cubes
+       and the rest to spheres. This improves visual richness.
+       ------------------------------ */
+    let cubeCount = Math.floor(totalCount * (1 - MIX_SPHERE_RATIO));
+    let sphereCount = totalCount - cubeCount;
+
+    // geometries and materials
+    const cubeGeo = new THREE.BoxGeometry(1,1,1);
+    const sphereGeo = new THREE.SphereGeometry(0.5, 10, 8);
+
+    // material is shared but color/emissive will be updated live
+    const matCommon = new THREE.MeshStandardMaterial({
+      color: 0x9fb7ff,
+      metalness: 0.24,
+      roughness: 0.36,
+      emissive: 0x1020ff,
+      emissiveIntensity: 0.08,
+      flatShading: false
+    });
+
+    // instanced meshes container
+    let cubeInstanced = new THREE.InstancedMesh(cubeGeo, matCommon, Math.max(1, cubeCount));
+    let sphereInstanced = new THREE.InstancedMesh(sphereGeo, matCommon, Math.max(1, sphereCount));
+    cubeInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    sphereInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    scene.add(cubeInstanced);
+    scene.add(sphereInstanced);
+
+    /* ------------------------------
+       Positioning arrays and helpers
+       We'll compute a Fibonacci sphere distribution for `totalCount` points.
+       Then map those points to per-type arrays. We'll also create "home" positions
+       (assembled sphere) and "exploded" positions (pushed outwards + random offset).
+       ------------------------------ */
+
+    function fibonacciSpherePoints(n, radius) {
+      const out = [];
+      const golden = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < n; i++) {
+        const y = 1 - (i / (n - 1)) * 2; // y in [-1,1]
+        const r = Math.sqrt(1 - y * y);
+        const theta = golden * i;
+        const x = Math.cos(theta) * r;
+        const z = Math.sin(theta) * r;
+        out.push(new THREE.Vector3(x * radius, y * radius, z * radius));
+      }
+      return out;
+    }
+
+    // arrays storing base assembled positions and normals
+    let assembledPositions = [];   // Vector3[]
+    let normals = [];              // normalized position vectors
+    let seeds = [];                // per-piece random seed
+    let randomOffsets = [];        // small jitter
+
+    function rebuildPositions(count) {
+      assembledPositions = [];
+      normals = [];
+      seeds = [];
+      randomOffsets = [];
+
+      // compute candidate positions based on totalCount to distribute pieces nicely
+      const pts = fibonacciSpherePoints(count, SPHERE_RADIUS);
+      for (let i = 0; i < count; i++) {
+        const p = pts[i].clone();
+        assembledPositions.push(p);
+        normals.push(p.clone().normalize());
+        seeds.push(Math.random() * Math.PI * 2);
+        randomOffsets.push(new THREE.Vector3(
+          (Math.random() - 0.5) * 0.14,
+          (Math.random() - 0.5) * 0.14,
+          (Math.random() - 0.5) * 0.14
+        ));
+      }
+    }
+
+    rebuildPositions(totalCount);
+
+    // Temporary objects for instance matrix composition (avoid allocations in loop)
+    const tmpMat = new THREE.Matrix4();
+    const tmpPos = new THREE.Vector3();
+    const tmpQuat = new THREE.Quaternion();
+    const tmpScale = new THREE.Vector3();
+
+    // timing
+    let startTime = performance.now();
+
+    // function to set instance transforms for each instanced mesh based on phase
+    // phase varies 0..1 where 1 = fully assembled (sphere), 0 = fully exploded
+    function updateInstances(phase) {
+      // split assembledPositions into cube and sphere segments
+      // cubes occupy indices [0 .. cubeCount-1]
+      // spheres occupy indices [cubeCount .. totalCount-1]
+      let ci = 0; // cube instance index
+      let si = 0; // sphere instance index
+
+      const tNow = performance.now() / 1000;
+
+      // helper to compute eased per-piece mix
+      for (let idx = 0; idx < totalCount; idx++) {
+        const base = assembledPositions[idx];
+        const n = normals[idx];
+        const seed = seeds[idx];
+        const jitter = randomOffsets[idx];
+
+        // per-piece oscillation to create natural movement
+        const rhythmic = (Math.sin(tNow * 1.0 + seed) + 1) * 0.5; // 0..1
+        // per-piece local mix modulates the global phase for variety
+        const localMix = THREE.MathUtils.lerp(phase, rhythmic, 0.45);
+
+        // target position: move from exploded (base + normal * explode + big jitter) to assembled (base)
+        const explodedPos = base.clone()
+          .add(n.clone().multiplyScalar(EXPLODE_DISTANCE * (1 + 0.12 * Math.sin(seed * 2))))
+          .add(jitter.clone().multiplyScalar(4.0));
+
+        tmpPos.copy(explodedPos).lerp(base, localMix); // when localMix=1 -> base (assembled)
+
+        // compose rotation using seed + time for slow spin
+        tmpQuat.setFromEuler(new THREE.Euler(seed * 0.15 + tNow * 0.02, seed * 0.22 + tNow * 0.014, seed * 0.08 + tNow * 0.018));
+
+        // scale slightly varies with localMix to feel depth
+        const s = PIECE_SIZE * (0.9 + 0.6 * (1 - localMix));
+        tmpScale.setScalar(s);
+
+        tmpMat.compose(tmpPos, tmpQuat, tmpScale);
+
+        // decide whether this index maps to cube or sphere
+        if (idx < cubeCount) {
+          cubeInstanced.setMatrixAt(ci, tmpMat);
+          ci++;
+        } else {
+          sphereInstanced.setMatrixAt(si, tmpMat);
+          si++;
+        }
+      }
+
+      // mark instance matrices updated
+      cubeInstanced.instanceMatrix.needsUpdate = true;
+      sphereInstanced.instanceMatrix.needsUpdate = true;
+    }
+
+    /* ------------------------------
+       Color & emissive cycling
+       We'll slowly shift hue across blue->purple->pink and update material.
+       ------------------------------ */
+    function updateMaterialColor(t) {
+      // t in seconds -> map to 0..1 hue cycle
+      const hueCycle = (Math.sin(t * 0.25) + 1) * 0.5; // 0..1
+      // manually blend between 3 palette points for richer effect
+      // blue: #4f9eff (79,158,255)  -> purple: #7a46e5 (122,70,229) -> pinkish: #e664a7 (230,100,167)
+      const r = Math.round(79 + (122 - 79) * hueCycle + (108 * Math.pow(hueCycle,2)));
+      const g = Math.round(158 + (70 - 158) * hueCycle + (30 * Math.pow(hueCycle,2)));
+      const b = Math.round(255 + (229 - 255) * hueCycle - (88 * Math.pow(hueCycle,2)));
+
+      const col = (r << 16) + (g << 8) + b;
+      matCommon.color.setHex(col);
+
+      // emissive brightness pulses slightly
+      const emissiveBase = 0.06 + 0.16 * Math.abs(Math.sin(t * 0.7));
+      matCommon.emissiveIntensity = emissiveBase * (0.9 + 0.2 * hueCycle);
+      // slightly shift emissive color toward warmer when hueCycle increases
+      const er = Math.round(30 + 160 * hueCycle);
+      const eg = Math.round(80 + 50 * hueCycle);
+      const eb = Math.round(255 - 30 * hueCycle);
+      const eCol = (er << 16) + (eg << 8) + eb;
+      matCommon.emissive.setHex(eCol);
+    }
+
+    /* ------------------------------
+       Animation loop:
+       - compute assemble/disassemble phase based on ASSEMBLE_PERIOD
+       - update instance matrices and material color
+       - rotate the whole instanced group slightly for parallax
+       ------------------------------ */
+    let last = performance.now();
+    function animate() {
+      const now = performance.now();
+      const elapsed = (now - startTime) / 1000.0; // seconds
+      // period-based value that goes 0..1..0 in ASSEMBLE_PERIOD seconds
+      const half = ASSEMBLE_PERIOD / 2;
+      const cyclePos = (elapsed % ASSEMBLE_PERIOD);
+      // if cyclePos < half => assembling (0->1), else disassembling (1->0)
+      let phase;
+      if (cyclePos <= half) {
+        phase = cyclePos / half; // 0..1
+        // apply easing (smoothstep-like)
+        phase = phase * phase * (3 - 2 * phase);
+      } else {
+        phase = 1 - ((cyclePos - half) / half); // 1..0
+        phase = phase * phase * (3 - 2 * phase);
+      }
+
+      // update instances with eased phase
+      updateInstances(phase);
+
+      // rotate whole instanced groups for visual motion
+      cubeInstanced.rotation.y += ROTATE_SPEED;
+      cubeInstanced.rotation.x += ROTATE_SPEED * 0.35;
+      sphereInstanced.rotation.y += ROTATE_SPEED * 0.9;
+      sphereInstanced.rotation.x += ROTATE_SPEED * 0.24;
+
+      // color update
+      updateMaterialColor(elapsed);
+
+      // responsive render sizing
+      const rect = heroBg.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width));
+      const h = Math.max(320, Math.floor(rect.height));
+      renderer.setSize(w, h, false);
+
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+      last = now;
+    }
+
+    // kick off
+    animate();
+
+    /* ------------------------------
+       Responsiveness: if breakpoint changes, rebuild instanced meshes
+       ------------------------------ */
+    let lastBreakpointCount = totalCount;
+    function rebuildIfNeeded() {
+      const newTotal = getCount();
+      if (newTotal !== lastBreakpointCount) {
+        // remove old instanced meshes
+        scene.remove(cubeInstanced);
+        scene.remove(sphereInstanced);
+
+        totalCount = newTotal;
+        cubeCount = Math.floor(totalCount * (1 - MIX_SPHERE_RATIO));
+        sphereCount = totalCount - cubeCount;
+
+        cubeInstanced = new THREE.InstancedMesh(cubeGeo, matCommon, Math.max(1, cubeCount));
+        sphereInstanced = new THREE.InstancedMesh(sphereGeo, matCommon, Math.max(1, sphereCount));
+        cubeInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        sphereInstanced.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+        scene.add(cubeInstanced);
+        scene.add(sphereInstanced);
+
+        rebuildPositions(totalCount);
+        lastBreakpointCount = newTotal;
+      }
+      // ensure renderer size updated even if not rebuilding
+      const rect = heroBg.getBoundingClientRect();
+      const w = Math.max(320, Math.floor(rect.width));
+      const h = Math.max(320, Math.floor(rect.height));
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', () => {
+      // throttle a little using requestAnimationFrame to avoid thrash on continuous resize
+      requestAnimationFrame(rebuildIfNeeded);
+    }, { passive: true });
+
+    /* ------------------------------
+       Accessibility fallback: hide canvas if WebGL not available
+       ------------------------------ */
+    if (!renderer.capabilities.isWebGL2 && !renderer.capabilities.isWebGL) {
+      canvas.style.display = 'none';
+      document.querySelector('.hero-content').style.opacity = '1';
+    }
+
+    /* ------------------------------
+       Additional small interactive behavior:
+       - On click on hero area, advance cycle to next assemble/disassemble phase (gives user control)
+       - On hover, slightly slow down automatic rotation for better reading
+       ------------------------------ */
+    let userInteractionTimer = null;
+    const heroArea = document.querySelector('.hero-wrap');
+    heroArea.addEventListener('click', () => {
+      // nudge time so that it jumps to next phase smoothly
+      startTime = performance.now() - (ASSEMBLE_PERIOD * 0.35 * 1000);
+      // small pulse for lighting to indicate interaction
+      matCommon.emissiveIntensity = Math.min(0.6, matCommon.emissiveIntensity + 0.12);
+      if (userInteractionTimer) clearTimeout(userInteractionTimer);
+      userInteractionTimer = setTimeout(() => {
+        // relax emissive back
+        matCommon.emissiveIntensity = Math.max(0.08, matCommon.emissiveIntensity - 0.12);
+      }, 600);
+    });
+
+    heroArea.addEventListener('mouseenter', () => {
+      // reduce rotate speeds for readability
+      cubeInstanced.rotationSpeedSaved = ROTATE_SPEED;
+      cubeInstanced.rotation.y -= 0; // no-op to keep object accessible
+    });
+
+    /* End of Three.js script */
+  </script>
+</body>
+</html>

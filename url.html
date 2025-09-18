@@ -1,0 +1,199 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>URL Checker | AI404</title>
+  <meta name="description" content="Check suspicious URLs with AI404" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #f9f9f9;
+      --muted: #697080;
+      --accent: #4f46e5;
+      --danger: #dc2626;
+      --safe: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(-45deg, #4f46e5, #06b6d4, #f43f5e, #fde68a);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #111;
+    }
+    header { background: #ffffff; backdrop-filter: blur(4px); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 600; color: #111; }
+    .logo { width: 44px; height: 44px; border-radius: 10px; background: linear-gradient(135deg,var(--accent),#06b6d4); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
+    nav ul { display: flex; gap: 18px; }
+    nav a { color: #111; font-weight: 500; text-decoration: none; }
+    .cta { background: var(--accent); color: #fff; padding: 10px 14px; border-radius: 10px; font-weight: 600; text-decoration: none; }
+
+    .hero { padding: 64px 0; text-align: center; }
+    .hero h1 { font-size: 36px; margin-bottom: 12px; }
+    .hero p { margin-bottom: 20px; color: #111; font-size: 18px; font-weight: bold; }
+
+    .form-card { background: var(--card); padding: 24px; border-radius: 12px; box-shadow: 0 8px 24px rgba(16,24,40,0.06); max-width: 600px; margin: 0 auto; }
+    .form-group { margin-bottom: 16px; text-align: left; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; }
+    input {
+      width: 100%; padding: 10px; border: 1px solid #ccc;
+      border-radius: 8px; font-size: 15px; font-family: inherit;
+    }
+    button {
+      background: var(--accent); color: #fff; padding: 12px 20px;
+      border: none; border-radius: 10px; font-size: 16px;
+      font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    }
+    button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(16,24,40,0.12); }
+
+    .result-card {
+      margin-top: 20px; padding: 20px; background: #fff; border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1); text-align: left;
+    }
+    .result-card h3 { margin-bottom: 14px; font-size: 20px; }
+    .fraud { color: var(--danger); font-weight: bold; }
+    .safe { color: var(--safe); font-weight: bold; }
+
+    .result-card p {
+      margin: 6px 0;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    .result-card .label {
+      font-weight: 600;
+      color: #222;
+      display: inline-block;
+      min-width: 130px;
+    }
+
+    .feedback-btns { margin-top: 16px; display: flex; gap: 12px; }
+    .feedback-btns button {
+      flex: 1;
+      background: #e5e7eb;
+      color: #111;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .feedback-btns button:hover { background: #d1d5db; }
+
+    footer { padding: 28px 0; color: var(--muted); font-size: 14px; text-align: center; margin-top: 40px; }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="brand">
+      <div class="logo">BD</div>
+      <div>
+        <div style="font-size:14px;">AI404</div>
+        <div style="font-size:12px;margin-top:2px;">URL Checker</div>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>   <!-- ✅ Fixed link -->
+        <li><a href="#">URL Checker</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>URL Checker</h1>
+    <p>Enter a URL to check for suspicious or malicious content.</p>
+
+    <div class="form-card">
+      <form id="urlForm">
+        <div class="form-group">
+          <label for="urlInput">Website URL</label>
+          <input type="url" id="urlInput" name="urlInput" placeholder="https://example.com" required>
+        </div>
+        <button type="submit">Check URL</button>
+      </form>
+
+      <!-- Results Section -->
+      <div id="resultBox" class="result-card" style="display:none;"></div>
+
+      <!-- ✅ Back to Home -->
+      <a class="cta" href="/" style="margin-top:20px; display:inline-block;">← Back to Home</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div>© "AI404" • <span style="color:var(--muted)">2025</span> | Built for Fraud Detection</div>
+</footer>
+
+<script>
+const urlForm = document.getElementById('urlForm');
+const resultBox = document.getElementById('resultBox');
+
+urlForm.addEventListener('submit', async function(e){
+  e.preventDefault();
+  const url = document.getElementById('urlInput').value;
+
+  try {
+    const response = await fetch("/predict/url", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: url })
+    });
+    const data = await response.json();
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+      <h3 class="${data.prediction.includes('Fraud') ? 'fraud' : 'safe'}">${data.prediction}</h3>
+      <p><span class="label">Risk Score:</span> ${data.risk_score}%</p>
+      <p><span class="label">Anomaly Score:</span> ${data.anomaly_score}%</p>
+      <p><span class="label">Rule Score:</span> ${data.rule_score}%</p>
+      <p><span class="label">Reasons:</span> ${data.reasons}</p>
+      <p><span class="label">Case Type:</span> ${data.case_type}</p>
+      <p><span class="label">Advice:</span> ${data.feedback}</p>
+      <p><span class="label">Helpline:</span> ${data.helpline.phone} | ${data.helpline.email}</p>
+
+      <div class="feedback-btns">
+        <button onclick="sendFeedback('${url}', 'safe')">✅ Mark as Safe</button>
+        <button onclick="sendFeedback('${url}', 'fraud')">🚨 Mark as Fraud</button>
+      </div>
+    `;
+  } catch (err) {
+    alert("Error: Could not connect to server.");
+  }
+
+  urlForm.reset();
+});
+
+async function sendFeedback(url, label) {
+  await fetch("/feedback/email", {   // ⚠️ still points to email feedback unless we make /feedback/url
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sender_email: "",
+      subject: "",
+      content: "",
+      urls: url,
+      file_types: "",
+      label: label
+    })
+  });
+
+  alert("✅ Feedback submitted: " + label);
+}
+</script>
+
+</body>
+</html>

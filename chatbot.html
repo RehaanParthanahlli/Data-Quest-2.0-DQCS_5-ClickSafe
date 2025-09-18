@@ -1,0 +1,214 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Help Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(-45deg, #3b82f6, #8b5cf6, #ec4899, #22d3ee);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #chat-container {
+            max-height: 65vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+        }
+        .user-bubble {
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            color: white;
+        }
+        .bot-bubble {
+            background: linear-gradient(to right, #e5e7eb, #f3f4f6);
+            color: #1f2937;
+        }
+        .typing-indicator {
+            display: none;
+            width: 60px;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 1rem;
+        }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #6b7280;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 4px;
+            animation: bounce 0.6s infinite alternate;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        .avatar-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            margin-right: 1rem;
+            animation: idle 2s ease-in-out infinite;
+        }
+        .avatar.speaking {
+            animation: speak 0.5s ease-in-out alternate infinite;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            to { transform: translateY(-6px); }
+        }
+        @keyframes idle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        @keyframes speak {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-3xl bg-white rounded-2xl shadow-2xl p-8">
+        <div class="flex items-center justify-center mb-6">
+            <h1 class="text-3xl font-extrabold text-gray-800">Website Help Chatbot</h1>
+            <span class="ml-2 text-2xl">🤖</span>
+        </div>
+        <div id="chat-container" class="bg-gray-50 p-6 rounded-xl mb-6 border border-gray-200">
+            <div id="chat-messages" class="space-y-4">
+                <div class="avatar-container">
+                    <svg class="avatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" fill="#3b82f6"/>
+                        <path d="M12 14c-4 0-7 2-7 5v2h14v-2c0-3-3-5-7-5z" fill="#60a5fa"/>
+                    </svg>
+                    <div class="chat-bubble bot-bubble p-4 rounded-lg shadow-sm">
+                        🤖 Welcome to Website Help Chatbot! Type 'exit' to quit or try 'help', 'dashboard', or 'features'.
+                    </div>
+                </div>
+            </div>
+            <div id="typing-indicator" class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="flex space-x-3">
+            <input
+                id="user-input"
+                type="text"
+                class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 bg-white"
+                placeholder="Type your message (e.g., help, dashboard, features)..."
+            />
+            <button
+                id="send-button"
+                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition duration-200 font-semibold"
+            >
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Generate a simple session ID
+        const sessionId = Math.random().toString(36).substring(2);
+
+        // DOM elements
+        const chatMessages = document.getElementById("chat-messages");
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-button");
+        const chatContainer = document.getElementById("chat-container");
+        const typingIndicator = document.getElementById("typing-indicator");
+
+        // Add message to chat
+        function addMessage(content, isUser) {
+            const messageDiv = document.createElement("div");
+            if (!isUser) {
+                const avatarContainer = document.createElement("div");
+                avatarContainer.className = "avatar-container";
+                const avatar = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                avatar.setAttribute("class", "avatar speaking");
+                avatar.setAttribute("viewBox", "0 0 24 24");
+                avatar.innerHTML = `
+                    <circle cx="12" cy="8" r="4" fill="#3b82f6"/>
+                    <path d="M12 14c-4 0-7 2-7 5v2h14v-2c0-3-3-5-7-5z" fill="#60a5fa"/>
+                `;
+                const textDiv = document.createElement("div");
+                textDiv.className = "chat-bubble bot-bubble p-4 rounded-lg shadow-sm";
+                textDiv.textContent = content;
+                avatarContainer.appendChild(avatar);
+                avatarContainer.appendChild(textDiv);
+                chatMessages.appendChild(avatarContainer);
+                setTimeout(() => avatar.classList.remove("speaking"), 1000);
+            } else {
+                messageDiv.className = "chat-bubble user-bubble p-4 rounded-lg shadow-sm ml-auto";
+                messageDiv.textContent = content;
+                chatMessages.appendChild(messageDiv);
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Show/hide typing indicator
+        function toggleTypingIndicator(show) {
+            typingIndicator.style.display = show ? "block" : "none";
+        }
+
+        // Send message to backend
+        async function sendMessage() {
+            const query = userInput.value.trim();
+            if (!query) return;
+
+            // Add user message
+            addMessage(query, true);
+            userInput.value = "";
+
+            // Handle exit
+            if (["exit", "quit"].includes(query.toLowerCase())) {
+                addMessage("Chatbot: Goodbye! Stay safe online. 👋", false);
+                sendButton.disabled = true;
+                userInput.disabled = true;
+                return;
+            }
+
+            // Send query to backend
+            try {
+                toggleTypingIndicator(true);
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, session_id: sessionId })
+                });
+                const data = await response.json();
+                toggleTypingIndicator(false);
+                addMessage(`Chatbot: ${data.response}`, false);
+            } catch (error) {
+                toggleTypingIndicator(false);
+                addMessage("Chatbot: Error communicating with server. Please try again.", false);
+            }
+        }
+
+        // Event listeners
+        sendButton.addEventListener("click", sendMessage);
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        // Focus input on load
+        userInput.focus();
+    </script>
+</body>
+</html>
